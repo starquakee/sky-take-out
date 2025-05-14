@@ -18,4 +18,6 @@ public interface SetmealDishMapper {
 
     @AutoFill(value = OperationType.INSERT)
     void insertBatch(List<SetmealDish> setmealDishes);
+
+    void deleteBySetmealIds(List<Long> setmealIds);
 }
