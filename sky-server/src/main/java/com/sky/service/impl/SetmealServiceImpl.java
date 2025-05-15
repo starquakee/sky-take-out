@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -76,4 +77,20 @@ public class SetmealServiceImpl implements SetmealService {
         setmealVO.setSetmealDishes(setmealDishes);
         return setmealVO;
     }
+
+    @Override
+    @Transactional
+    public void updateWithDish(SetmealDTO setmealDTO) {
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO, setmeal);
+        setmealMapper.update(setmeal);
+        Long setmealId = setmealDTO.getId();
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        setmealDishMapper.deleteBySetmealIds(Collections.singletonList(setmealId));
+        if(setmealDishes != null&&setmealDishes.size()>0){
+            setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
+            setmealDishMapper.insertBatch(setmealDishes);
+        }
+    }
+
 }

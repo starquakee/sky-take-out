@@ -53,4 +53,12 @@ public class SetmealController {
         return Result.success(setmealVO);
     }
 
+    @PutMapping
+    @ApiOperation("修改套餐")
+    public Result update(@RequestBody SetmealDTO setmealDTO) {
+        log.info("修改套餐：{}", setmealDTO);
+        setmealService.updateWithDish(setmealDTO);
+        return Result.success();
+    }
+
 }
