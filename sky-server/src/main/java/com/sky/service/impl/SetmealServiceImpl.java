@@ -6,9 +6,11 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
@@ -30,6 +32,8 @@ public class SetmealServiceImpl implements SetmealService {
     private SetmealMapper setmealMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private DishMapper dishMapper;
 
     @Override
     @Transactional
@@ -91,6 +95,26 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
             setmealDishMapper.insertBatch(setmealDishes);
         }
+    }
+
+    @Override
+    @Transactional
+    public void startOrStop(Integer status, Long id) {
+        if(status == StatusConstant.ENABLE){
+            List<SetmealDish> setmealDishes = setmealDishMapper.getBySetmealId(id);
+            if(setmealDishes != null&&setmealDishes.size()>0){
+                for(SetmealDish setmealDish:setmealDishes){
+                    Dish dish = dishMapper.getById(setmealDish.getDishId());
+                    if(dish.getStatus() == StatusConstant.DISABLE){
+                        throw new RuntimeException(MessageConstant.SETMEAL_ENABLE_FAILED);
+                    }
+                }
+            }
+        }
+        Setmeal setmeal = new Setmeal();
+        setmeal.setStatus(status);
+        setmeal.setId(id);
+        setmealMapper.update(setmeal);
     }
 
 }
