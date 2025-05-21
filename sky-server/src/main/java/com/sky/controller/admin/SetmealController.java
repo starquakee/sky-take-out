@@ -34,7 +34,6 @@ public class SetmealController {
 
     @GetMapping("/page")
     @ApiOperation("套餐分页查询")
-    @Cacheable(cacheNames = "setmealCache", key = "#setmealPageQueryDTO.categoryId")
     public Result<PageResult> page(SetmealPageQueryDTO setmealPageQueryDTO) {
         log.info("套餐分页查询：page={},pageSize={}", setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
         PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);
