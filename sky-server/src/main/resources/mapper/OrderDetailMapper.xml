@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.OrderDetailMapper">
+
+
+    <insert id="insertBatch">
+        insert into order_detail(order_id,dish_id,setmeal_id,name,image,amount,dish_flavor,number)
+        values
+        <foreach collection="orderDetailList" item="orderDetail" separator=",">
+            (#{orderDetail.orderId},#{orderDetail.dishId},#{orderDetail.setmealId},#{orderDetail.name},#{orderDetail.image},#{orderDetail.amount},#{orderDetail.dishFlavor},#{orderDetail.number})
+        </foreach>
+    </insert>
+</mapper>
