@@ -18,4 +18,6 @@ public interface OrderService {
     PageResult pageQuery(Integer page, Integer pageSize, Integer status);
 
     OrderVO orderDetail(Long id);
+
+    void cancel(Long id) throws Exception;
 }
