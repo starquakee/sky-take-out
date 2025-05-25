@@ -20,4 +20,6 @@ public interface OrderService {
     OrderVO orderDetail(Long id);
 
     void cancel(Long id) throws Exception;
+
+    void repetition(Long id);
 }
