@@ -70,4 +70,12 @@ public class OrderController {
         orderService.cancelByAdmin(ordersCancelDTO);
         return Result.success();
     }
+
+    @PutMapping("/delivery/{id}")
+    @ApiOperation("派送订单")
+    public Result delivery(@PathVariable Long id) throws Exception {
+        log.info("派送订单:{}", id);
+        orderService.delivery(id);
+        return Result.success();
+    }
 }

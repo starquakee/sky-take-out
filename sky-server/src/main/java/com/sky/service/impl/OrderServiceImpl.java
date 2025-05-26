@@ -316,6 +316,35 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+    @Override
+    public void delivery(Long id) throws Exception {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        //支付状态
+        Integer payStatus = ordersDB.getPayStatus();
+        if (payStatus == Orders.PAID) {
+            //用户已支付，需要退款
+            String refund = weChatPayUtil.refund(
+                    ordersDB.getNumber(),
+                    ordersDB.getNumber(),
+                    new BigDecimal(0.01),
+                    new BigDecimal(0.01));
+            log.info("申请退款：{}", refund);
+        }
+
+        // 拒单需要退款，根据订单id更新订单状态、拒单原因、取消时间
+        Orders orders = new Orders();
+        orders.setId(ordersDB.getId());
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+
+        orderMapper.update(orders);
+    }
+
     private List<OrderVO> getOrderVOList(Page<Orders> page) {
         // 需要返回订单菜品信息，自定义OrderVO响应结果
         List<OrderVO> orderVOList = new ArrayList<>();

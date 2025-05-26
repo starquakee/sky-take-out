@@ -32,4 +32,6 @@ public interface OrderService {
     void rejection(OrdersRejectionDTO ordersRejectionDTO) throws Exception;
 
     void cancelByAdmin(OrdersCancelDTO ordersCancelDTO) throws Exception;
+
+    void delivery(Long id) throws Exception;
 }
