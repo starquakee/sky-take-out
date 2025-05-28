@@ -71,4 +71,13 @@ public class OrderController {
         return Result.success();
     }
 
+    @GetMapping("/remind/{id}")
+    @ApiOperation("催单提醒")
+    public Result reminder(@PathVariable Long id) throws Exception {
+        log.info("催单提醒:{}", id);
+        orderService.remind(id);
+        return Result.success();
+    }
+
+
 }

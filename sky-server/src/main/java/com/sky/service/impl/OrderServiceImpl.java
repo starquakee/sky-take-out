@@ -152,7 +152,7 @@ public class OrderServiceImpl implements OrderService {
         Map map = new HashMap<>();
         map.put("type", 1);
         map.put("orderId", ordersDB.getId());
-        map.put("content", "订单号"+outTradeNo);
+        map.put("content", "订单号："+outTradeNo);
         String jsonString = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(jsonString);
     }
@@ -397,6 +397,20 @@ public class OrderServiceImpl implements OrderService {
         orders.setDeliveryTime(LocalDateTime.now());
 
         orderMapper.update(orders);
+    }
+
+    @Override
+    public void remind(Long id) {
+        Orders orders = orderMapper.getById(id);
+        if (orders == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        Map map = new HashMap();
+        map.put("type", 2);
+        map.put("orderId", id);
+        map.put("content", "订单号："+orders.getNumber());
+        String jsonString = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(jsonString);
     }
 
     private List<OrderVO> getOrderVOList(Page<Orders> page) {
