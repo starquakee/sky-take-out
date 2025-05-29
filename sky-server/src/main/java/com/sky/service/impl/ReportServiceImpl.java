@@ -4,6 +4,7 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.lang3.StringUtils;
@@ -80,6 +81,46 @@ public class ReportServiceImpl implements ReportService {
                 .dateList(StringUtils.join(list, ","))
                 .newUserList(StringUtils.join(newUserList, ","))
                 .totalUserList(StringUtils.join(totalUserList, ","))
+                .build();
+    }
+
+    @Override
+    public OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> list = new ArrayList<>();
+        list.add(begin);
+        while (begin.isBefore(end)) {
+            begin = begin.plusDays(1);
+            list.add(begin);
+        }
+        List<Integer> orderCountList = new ArrayList<>();
+        List<Integer> validOrderCountList = new ArrayList<>();
+        for(LocalDate date : list) {
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalDateTime.MIN.toLocalTime());
+            LocalDateTime endTime = LocalDateTime.of(date, LocalDateTime.MAX.toLocalTime());
+            Map map = new HashMap<>();
+            map.put("beginTime", beginTime);
+            map.put("endTime", endTime);
+            Integer orderCount = orderMapper.countByMap(map);
+            orderCount = orderCount == null ? 0 : orderCount;
+            orderCountList.add(orderCount);
+
+            map.put("status", Orders.COMPLETED);
+            Integer validOrderCount = orderMapper.countByMap(map);
+            validOrderCount = validOrderCount == null ? 0 : validOrderCount;
+            validOrderCountList.add(validOrderCount);
+        }
+        double orderCompletionRate = 0.0;
+        if(orderCountList.stream().mapToInt(Integer::intValue).sum() != 0) {
+            orderCompletionRate = (double) validOrderCountList.stream().mapToInt(Integer::intValue).sum() / orderCountList.stream().mapToInt(Integer::intValue).sum();
+        }
+        return OrderReportVO
+                .builder()
+                .dateList(StringUtils.join(list, ","))
+                .orderCountList(StringUtils.join(orderCountList, ","))
+                .validOrderCountList(StringUtils.join(validOrderCountList, ","))
+                .totalOrderCount(orderCountList.stream().mapToInt(Integer::intValue).sum())
+                .validOrderCount(validOrderCountList.stream().mapToInt(Integer::intValue).sum())
+                .orderCompletionRate(orderCompletionRate)
                 .build();
     }
 }
