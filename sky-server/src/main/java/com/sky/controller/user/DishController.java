@@ -4,6 +4,7 @@ import com.sky.constant.StatusConstant;
 import com.sky.entity.Dish;
 import com.sky.result.Result;
 import com.sky.service.DishService;
+import com.sky.util.BloomFilter;
 import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +25,8 @@ public class DishController {
     private DishService dishService;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private BloomFilter bloomFilter;
 
     /**
      * 根据分类id查询菜品
@@ -39,6 +42,10 @@ public class DishController {
         List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key);
         if (list != null&&list.size()>0) {
             return Result.success(list);
+        }
+        if(!bloomFilter.mightContain(categoryId)){
+            System.out.println("布隆过滤器拦截，ID: " + categoryId + " 确定不存在。");
+            return Result.error("菜品不存在");
         }
         Dish dish = new Dish();
         dish.setCategoryId(categoryId);

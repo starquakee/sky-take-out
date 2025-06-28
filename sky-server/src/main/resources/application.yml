@@ -13,10 +13,17 @@ spring:
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
   redis:
-    host: ${sky.redis.host}
-    port: ${sky.redis.port}
-    password: ${sky.redis.password}
-    database: ${sky.redis.database}
+    # docker run -p 6379:6379 --name redis-bloom redislabs/rebloom:latest
+#    host: ${sky.redis.host}
+#    port: ${sky.redis.port}
+##    password: ${sky.redis.password}
+#    database: ${sky.redis.database}
+    redisson:
+      config: |
+        singleServerConfig:
+          address: "redis://127.0.0.1:6379"
+          database: ${sky.redis.database}
+          timeout: 10000
 
 mybatis:
   #mapper配置文件

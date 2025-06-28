@@ -6,6 +6,7 @@ import com.sky.entity.Dish;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
+import com.sky.util.BloomFilter;
 import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +27,8 @@ public class DishController {
     private DishService dishService;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private BloomFilter bloomFilter;
     @PostMapping
     @ApiOperation("新增菜品")
     public Result save(@RequestBody DishDTO dishDTO) {
@@ -34,6 +37,7 @@ public class DishController {
         //清理缓存
         String key = "dish_" + dishDTO.getCategoryId();
         cleanCache(key);
+        bloomFilter.add(dishDTO.getCategoryId());
         return Result.success();
     }
 
@@ -69,6 +73,7 @@ public class DishController {
         log.info("修改菜品：{}", dishDTO);
         dishService.updateWithFlavor(dishDTO);
         cleanCache("dish_*");
+        bloomFilter.add(dishDTO.getCategoryId());
         return Result.success();
     }
 

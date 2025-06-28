@@ -115,6 +115,14 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
         </dependency>
+
+        <!-- redisson-bloom -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>3.27.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
